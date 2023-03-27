@@ -33,9 +33,11 @@ def transform_array_to_perspective(arr, T):
     return np.c_[tx / v, ty / v]
 
 def transform_dataframe_to_perspective(df, T):
-    """Transform the coordinate dataframes to be in the box's frame of reference"""
-    df = df.copy().dropna()
+    """Transform the coordinate dataframes to be in the box's frame of reference""" 
+    na_values = df.isna()
+    df = df.copy().fillna(0)
     idx = pd.IndexSlice
+     
     x = df.loc[:, idx[:, :, "x"]]
     y = df.loc[:, idx[:, :, "y"]]
     x = x.stack(dropna=False).stack(dropna=False)
@@ -51,15 +53,36 @@ def transform_dataframe_to_perspective(df, T):
     # Update multi index columns to match
     df.loc[:, pd.IndexSlice[:, :, "x"]] = tx
     df.loc[:, pd.IndexSlice[:, :, "y"]] = ty
+    df[na_values] = np.NaN
     return df
 
-def calculate_distance(data: Union[np.ndarray, pd.DataFrame]):
+def calculate_distance(data: Union[np.ndarray, pd.DataFrame], smoothing_window=5):
     if isinstance(data, np.ndarray):
-        pass
+        data = pd.DataFrame(data)
+        # data = data.rolling(smoothing_window, center=True).mean()
+        delta = data.diff()
+        distance = np.linalg.norm(delta.values, axis=1)
     elif isinstance(data, pd.DataFrame):
-        pass
+        # data = data.rolling(smoothing_window, center=True).mean()
+        delta = data.diff()
+        distance = np.sqrt(delta.x**2 + delta.y**2)
+    else:
+        raise Exception("Type not recognized")
+    
+    distance = pd.Series(distance).rolling(smoothing_window, center=True).mean()
+    return distance
+    
+def create_rotation_affine(rad):
+    return np.array([[np.cos(rad), -np.sin(rad), 0], [np.sin(rad), np.cos(rad), 0], [0,0,1]])
+
+def rotate_points(points, affine):
+    points = np.c_[points, np.ones_like(points[:,0])]
+    points = affine @ points.T
+    return points.T[:,:2]
 
 def get_homography(points, target):
+    points = points.astype(np.float32)
+    target = target.astype(np.float32)
     T, res = cv2.findHomography(
         points, target, cv2.RANSAC, ransacReprojThreshold=32)
     return T
@@ -83,9 +106,13 @@ class VideoAnalysis:
         self.dlc_file = dlc_file
 
         # Load keypoints
-        self.keypoints = pd.read_hdf(self.dlc_file).droplevel('scorer', axis=1) 
+        self.keypoints = pd.read_hdf(self.dlc_file)   
 
     @property
     def bodyparts(self):
         return self.keypoints.columns.get_level_values('bodyparts').unique()
+    
+    @property
+    def cap(self):
+        return cv2.VideoCapture(str(self.video))
     

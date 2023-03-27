@@ -1,0 +1,5 @@
+,Video,Keypoints
+0,/home/andretelfer/shared/curated/thea/trial-analysis/videos/Day4A19.mp4,/home/andretelfer/shared/curated/thea/trial-analysis/labels/Day4A19DLC_resnet50_A19allMar17shuffle1_1030000.h5
+1,/home/andretelfer/shared/curated/thea/trial-analysis/videos/Day1A19.mp4,/home/andretelfer/shared/curated/thea/trial-analysis/labels/Day1A19DLC_resnet50_A19allMar17shuffle1_1030000.h5
+2,/home/andretelfer/shared/curated/thea/trial-analysis/videos/Day10A19.mp4,/home/andretelfer/shared/curated/thea/trial-analysis/labels/Day10A19DLC_resnet50_A19allMar17shuffle1_1030000.h5
+3,/home/andretelfer/shared/curated/thea/trial-analysis/videos/AccA19.mp4,/home/andretelfer/shared/curated/thea/trial-analysis/labels/AccA19DLC_resnet50_A19allMar17shuffle1_1030000.h5

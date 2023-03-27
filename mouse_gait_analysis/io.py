@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 
 class VideoReader:
-    def __init__(self, video):
+    def __init__(self, video, transforms=None):
         video = str(video)
         self.video = video
         self.fname = Path(video).parts[-1].split('.')[0]
@@ -13,6 +13,8 @@ class VideoReader:
         self.fps = float(self.cap.get(cv2.CAP_PROP_FPS))
         self.frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.pos = 0
+
+        self.transforms = [] if transforms is None else transforms
         
     def __getitem__(self, idx):
         if idx >= self.frames or idx < 0:
@@ -25,6 +27,10 @@ class VideoReader:
         ret, frame = self.cap.read()
         self.pos += 1
         frame = np.flip(frame, 2)
+
+        for transform in self.transforms:
+            frame = transform.apply(frame)
+             
         return frame
     
     def __len__(self):
