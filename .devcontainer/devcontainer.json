@@ -1,0 +1,10 @@
+{
+  "name": "Mouse Gait Analysis",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "mounts": [
+    {"target": "/shared", "source": "/Users/andretelfer/shared", "type": "bind"}
+  ]
+}

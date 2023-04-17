@@ -2,8 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+from tqdm import tqdm
+from skimage import draw
 from PIL import Image
 from mouse_gait_analysis.utils import calculate_distance, rotate_points, create_rotation_affine
+from mouse_gait_analysis.io import VideoReader, VideoWriter
 
 def visualize_distances(
         keypoints, 
@@ -228,3 +231,182 @@ def visualize_step_by_distance(
     plt.ylim([-0.2, 1.2])
     plt.xlabel("[mm]")
 
+
+def plot_steps(
+        video, 
+        keypoints, 
+        start, 
+        duration,
+        stance_threshold=1.4, 
+        swing_threshold=2.0,
+        rolling_window=5,
+        display_touch_positions=True):
+    
+    end = start + duration
+
+    stance_threshold = 1.4
+    swing_threshold = 2.0
+
+    plt.figure(figsize=(12,12))
+    frame = video[end]
+    plt.imshow(frame)
+
+    for bodypart in ['left_back_paw', 'right_back_paw']:
+        bodypart_keypoints = keypoints.xs(bodypart, level='bodyparts', axis=1).droplevel(0, axis=1)
+        bodypart_keypoints = bodypart_keypoints.rolling(rolling_window, center=True).mean()
+        deltas = bodypart_keypoints.diff()
+        distances = np.sqrt(deltas.x**2 + deltas.y**2)
+        distances.loc[start:end]
+
+        steps = distances.copy()
+        steps[:] = np.nan
+        step = 0
+        stance_start = -1
+        stance_end = -1
+        is_bodypart_moving = True 
+        for idx in tqdm(distances.index):
+            d = distances.loc[idx]
+
+            # Stance phase logic
+            if is_bodypart_moving and d < stance_threshold:
+                is_bodypart_moving = False
+                stance_start = idx
+            elif not is_bodypart_moving and d > stance_threshold:
+                stance_end = idx
+
+            # Don't start counting steps until a stance phase has been entered once
+            if stance_start == -1:
+                continue
+
+            # Trigger based on movement threshold
+            if not is_bodypart_moving and d > swing_threshold:
+                is_bodypart_moving = True
+                steps.loc[stance_start:stance_end] = step
+                step += 1
+
+        plt.plot(*bodypart_keypoints.loc[start:end, ['x','y']].values.T)
+        for step in steps.loc[start:end].dropna().unique():
+            step_points = bodypart_keypoints.loc[steps == step]
+            # plt.scatter(step_points.x, step_points.y, s=20, color='red')
+
+            center = bodypart_keypoints.loc[steps == step].mean()
+            circle = plt.Circle((center.x, center.y), radius=10, facecolor=[0,0,0,0], linewidth=2, edgecolor=[1.,0,0,0.5])
+            plt.gca().add_patch(circle)
+
+            def plot_step(point):
+                x = point.x
+                y = point.y
+                s = 3
+                circle = plt.Polygon([[x-s,y-s], [x+s,y-s], [x,y+s]], color=[0,1.0,0])
+                plt.gca().add_patch(circle)
+                
+            if display_touch_positions:
+                plot_step(bodypart_keypoints.loc[steps == step].iloc[0])
+                plot_step(bodypart_keypoints.loc[steps == step].iloc[-1])
+
+
+def create_step_video(
+        video, 
+        keypoints,
+        output_path, 
+        start, 
+        duration, 
+        stance_threshold=1.4, 
+        swing_threshold=2.0,
+        rolling_window=5,
+        display_touch_positions=True,
+        output_fps=5,
+        track_color=[0,0,255],
+        step_color=[255,0,0],
+        touch_color=[0,255,0]):
+    
+    end = start + duration
+    bodyparts = None
+
+    frame = np.zeros_like(video[0])
+    w, h, c = frame.shape
+
+    if bodyparts is None:
+        bodyparts = ['left_back_paw', 'right_back_paw']
+
+    for bodypart in bodyparts:
+        bodypart_keypoints = keypoints.xs(bodypart, level='bodyparts', axis=1).droplevel(0, axis=1)
+        bodypart_keypoints = bodypart_keypoints.rolling(rolling_window, center=True).mean()
+
+        # Calculate distance
+        deltas = bodypart_keypoints.diff()
+        distances = np.sqrt(deltas.x**2 + deltas.y**2)
+        distances.loc[start:end]
+
+        # Extract steps based on distance
+        steps = distances.copy()
+        steps[:] = np.nan
+        step = 0
+        is_bodypart_moving = True
+        stance_start = -1
+        stance_end = -1
+        for idx in tqdm(distances.index, desc=f"Finding stationary positions of {bodypart}"):
+            d = distances.loc[idx]
+
+            # Stance phase logic
+            if is_bodypart_moving and d < stance_threshold:
+                is_bodypart_moving = False
+                stance_start = idx
+            elif not is_bodypart_moving and d > stance_threshold:
+                stance_end = idx
+
+            # Don't start counting steps until a stance phase has been entered once
+            if stance_start == -1:
+                continue
+
+            # Trigger based on movement threshold
+            if not is_bodypart_moving and d > swing_threshold:
+                is_bodypart_moving = True
+                steps.loc[stance_start:stance_end] = step
+                step += 1
+
+        # Draw tracks
+        points = bodypart_keypoints.loc[start:end, ["x", "y"]].values.astype(int)
+        x, y = points.T
+        for i in range(len(x)-1):
+            rr, cc = draw.line(y[i], x[i], y[i+1], x[i+1])
+            frame[rr, cc] = track_color
+
+        # Draw average step position, start, and exit
+        for step in steps.loc[start:end].dropna().unique():
+            step_points = bodypart_keypoints.loc[steps == step]
+
+            # Center position
+            center = step_points.mean()
+            orr, occ = draw.ellipse(center.y, center.x, r_radius=12, c_radius=12, shape=(h,w))
+            irr, icc = draw.ellipse(center.y, center.x, r_radius=10, c_radius=10, shape=(h,w))
+            mask = np.zeros(shape=(h, w, 3), dtype=float)
+            mask[orr, occ] = 1
+            mask[irr, icc] = 0
+            rr, cc = np.argwhere((mask > 0).any(axis=-1)).T 
+            frame[rr, cc] = step_color
+
+            # Plot strike/leave positions
+            if display_touch_positions:
+                def draw_foot_position(row):
+                    x = row.x
+                    y = row.y
+                    s = 3
+                    points = np.array([[x-s,y-s], [x+s, y-s], [x, y+s]]).astype(int)
+                    x, y = points.T
+                    rr, cc = draw.polygon(y, x, shape=(h, w))
+                    frame[rr, cc] = touch_color
+                    
+                draw_foot_position(step_points.iloc[0])
+                draw_foot_position(step_points.iloc[-1])
+
+    background = frame 
+
+    # Overlay frames
+    with VideoWriter(video=output_path, fps=output_fps, width=w, height=h) as writer:
+        for i in tqdm(range(start, end+1), desc="Writing video"):
+            frame = video[i]
+
+            rr, cc = np.argwhere((background > 0).any(axis=-1)).T 
+            frame[rr, cc] = background[rr, cc]
+            writer.write(frame)

@@ -1,0 +1,14 @@
+opencv-python-headless
+matplotlib
+numpy 
+pandas
+tables
+jupyter-book
+jupyterlab
+ipython
+ipykernel
+ghp-import
+tqdm
+seaborn
+ipywidgets
+scikit-image

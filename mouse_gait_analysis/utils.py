@@ -5,9 +5,15 @@ import cv2
 from typing import Union
 
 class PerspectiveTransformer:
-    def __init__(self):
-        pass
-
+    """
+    Usage
+    ---
+    ```
+    transformer = PerspectiveTransformer()
+    transformer.register(points, target)
+    transformed_points = transformer.apply()
+    ```
+    """
     def register(self, points, target):
         self.M = get_homography(points, target)
         xmax, ymax = target.max(axis=0)
@@ -72,6 +78,7 @@ def calculate_distance(data: Union[np.ndarray, pd.DataFrame], smoothing_window=5
     distance = pd.Series(distance).rolling(smoothing_window, center=True).mean()
     return distance
     
+
 def create_rotation_affine(rad):
     return np.array([[np.cos(rad), -np.sin(rad), 0], [np.sin(rad), np.cos(rad), 0], [0,0,1]])
 
