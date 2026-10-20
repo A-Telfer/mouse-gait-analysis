@@ -3,3 +3,5 @@ data/
 .env
 
 .claude/
+
+__pycache__/

@@ -6,8 +6,26 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = []
 
+[project.scripts]
+mouse-gait = "mouse_gait.main:main"
+
+[build-system]
+requires = ["uv_build>=0.11.26,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "mouse_gait"
+
 [dependency-groups]
 dev = [
     "mypy>=2.4.0",
     "ruff>=0.17.1",
 ]
+
+[tool.ruff]
+# scripts/ run in the DeepLabCut environment, which uses an older Python
+per-file-target-version = { "scripts/*" = "py310" }
+
+[[tool.mypy.overrides]]
+module = ["deeplabcut", "deeplabcut.*"]
+ignore_missing_imports = true  # DLC runs in its own environment
