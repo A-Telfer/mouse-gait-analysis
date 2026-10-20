@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-Early scaffold: the package is `src/mouse_gait/` (src layout, `uv_build` backend, so `import mouse_gait` works after `uv sync`). `src/mouse_gait/main.py` is a placeholder exposed as the `mouse-gait` console script, and `scripts/`, `notebooks/` and `tests/` are empty. `Makefile` and `.env.template` exist but are empty, and there are no tests yet. Update this file as the pipeline takes shape.
+Early scaffold: the package is `src/mouse_gait/` (src layout, `uv_build` backend, so `import mouse_gait` works after `uv sync`). `src/mouse_gait/main.py` is a placeholder exposed as the `mouse-gait` console script, and `scripts/`, `notebooks/` and `tests/` are empty. `.env.template` is empty, and there are no tests yet. `make` lists the shortcut targets; add a `## description` comment to any new target so it appears in that list. Update this file as the pipeline takes shape.
 
 ## Lint, type check, format
 

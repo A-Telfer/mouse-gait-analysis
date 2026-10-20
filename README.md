@@ -1,5 +1,7 @@
 # mouse-gait-pq
 
+Run `make` to list shortcuts for the commands below (`make install`, `make format`, `make check`, `make setup-dlc`, …).
+
 ## Setup
 
 ```sh
