@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-Early scaffold: `src/main.py` is a placeholder, and `scripts/`, `notebooks/` and `tests/` are empty. `Makefile` and `.env.template` exist but are empty, and there are no tests yet. Update this file as the pipeline takes shape.
+Early scaffold: the package is `src/mouse_gait/` (src layout, `uv_build` backend, so `import mouse_gait` works after `uv sync`). `src/mouse_gait/main.py` is a placeholder exposed as the `mouse-gait` console script, and `scripts/`, `notebooks/` and `tests/` are empty. `Makefile` and `.env.template` exist but are empty, and there are no tests yet. Update this file as the pipeline takes shape.
 
 ## Lint, type check, format
 
@@ -17,7 +17,7 @@ ruff and mypy are dev dependencies, using their default configs (no settings in 
 ## Environment
 
 - Managed with `uv`, Python 3.14 (`.python-version`; `requires-python = ">=3.14"`). No dependencies declared yet.
-- `uv sync` to install, `uv run python src/main.py` to run, `uv add <pkg>` to add dependencies.
+- `uv sync` to install, `uv run mouse-gait` to run, `uv add <pkg>` to add dependencies.
 - Pose-estimation tooling (e.g. DeepLabCut) may not support Python 3.14; check before adding it, and pin a lower Python if needed.
 
 ## Data

@@ -6,6 +6,16 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = []
 
+[project.scripts]
+mouse-gait = "mouse_gait.main:main"
+
+[build-system]
+requires = ["uv_build>=0.11.26,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "mouse_gait"
+
 [dependency-groups]
 dev = [
     "mypy>=2.4.0",
