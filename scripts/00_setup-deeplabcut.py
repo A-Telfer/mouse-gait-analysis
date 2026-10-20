@@ -35,9 +35,16 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    videos = sorted(str(p) for p in VIDEO_DIR.glob("*.mp4"))
-    if not videos:
+    if not VIDEO_DIR.is_dir():
+        sys.exit(f"Video folder not found: {VIDEO_DIR}")
+    paths = sorted(VIDEO_DIR.glob("*.mp4"))
+    missing = [p for p in paths if not p.is_file()]  # e.g. broken links
+    if missing:
+        sys.exit("Unreadable videos:\n" + "\n".join(f"  {p}" for p in missing))
+    if not paths:
         sys.exit(f"No .mp4 videos found in {VIDEO_DIR}")
+    videos = [str(p) for p in paths]
+    print(f"Found {len(videos)} videos in {VIDEO_DIR}")
 
     existing = find_projects(PROJECT_DIR)
     if existing:
