@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := help
-.PHONY: help install format lint typecheck check setup-dlc
+.PHONY: help install format lint typecheck check 00-deeplabcut
 
 help: ## list available commands
-	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
 
 install: ## install dependencies (uv sync)
 	uv sync
@@ -19,5 +19,5 @@ typecheck: ## type check with mypy
 
 check: lint typecheck ## lint and type check
 
-setup-dlc: ## create DeepLabCut project (run in the DLC env; ARGS="--experimenter <name>")
+00-deeplabcut: ## create DeepLabCut project (run in the DLC env; ARGS="--experimenter <name>")
 	python scripts/00_setup-deeplabcut.py $(ARGS)
