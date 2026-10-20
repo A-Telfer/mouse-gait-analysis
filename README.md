@@ -40,4 +40,4 @@ Then extract frames to label:
 make 01-deeplabcut-frames   # or: python scripts/01_deeplabcut_extract_initial_frames.py
 ```
 
-Options (all optional): `--frames-per-video` (default: 5, about 600 frames across all videos), `--algo` (`kmeans` or `uniform`, default: `kmeans`) and `--cluster-step` (default: 10; kmeans only looks at every Nth frame, for speed). If frames already exist, the script asks before adding more.
+Frames are picked completely at random from each video. Option: `--frames-per-video` (default: 5, about 600 frames across all videos). If frames already exist, the script asks before adding more.

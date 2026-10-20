@@ -1,7 +1,7 @@
 """Extract the initial frames to label from every video in the DeepLabCut project.
 
-Uses DLC's k-means extraction, which picks visually different frames from each
-video. Run with the Python environment that has DeepLabCut installed.
+Frames are picked completely at random from each video (DLC's "uniform" mode).
+Run with the Python environment that has DeepLabCut installed.
 """
 
 import argparse
@@ -28,18 +28,6 @@ def main() -> str:
         default=5,
         help="frames to extract per video (default: 5)",
     )
-    parser.add_argument(
-        "--algo",
-        choices=["kmeans", "uniform"],
-        default="kmeans",
-        help="frame selection method (default: kmeans)",
-    )
-    parser.add_argument(
-        "--cluster-step",
-        type=int,
-        default=10,
-        help="kmeans: use every Nth frame, for speed (default: 10)",
-    )
     args = parser.parse_args()
     if args.frames_per_video < 1:
         raise Stopped("--frames-per-video must be at least 1")
@@ -59,9 +47,8 @@ def main() -> str:
     deeplabcut.extract_frames(
         str(config),
         mode="automatic",
-        algo=args.algo,
+        algo="uniform",  # random frames, evenly likely across the whole video
         userfeedback=False,  # extract from every video without asking per video
-        cluster_step=args.cluster_step,
         crop=False,
     )
 
