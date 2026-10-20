@@ -8,10 +8,10 @@ Early scaffold: the package is `src/mouse_gait/` (src layout, `uv_build` backend
 
 ## Lint, type check, format
 
-ruff and mypy are dev dependencies, using their default configs (no settings in `pyproject.toml`).
+ruff and mypy are dev dependencies with default settings, except a mypy override that ignores missing `deeplabcut` imports.
 
 - `uv run ruff check`: lint
-- `uv run mypy src`: type check
+- `uv run mypy src scripts`: type check (`deeplabcut` imports are ignored; DLC runs in its own environment)
 - `uv run ruff format` and `uv run ruff check --fix`: autoformat and apply fixes
 
 ## Environment
@@ -28,6 +28,7 @@ ruff and mypy are dev dependencies, using their default configs (no settings in 
   - `session` is one of `acclimation`, `baseline`, `recording1`, `recording2`, `recording3`.
   - Some sessions were split into two files, `-1` and `-2` (e.g. `m17-1_recording1.mp4` + `m17-2_recording1.mp4`), with no unsuffixed file. This happens for m13, m17, m22 and m23. Filename parsing must handle the suffix and must not assume one video per mouse per session.
   - Not every mouse has every session. Don't hard-code a complete grid.
+- `data/deeplabcut/` holds DLC projects, created by `scripts/00_setup-deeplabcut.py` from the DLC environment. Videos are linked, not copied. Scripts are numbered in pipeline order (`00_`, `01_`, …).
 
 ## Background
 
