@@ -4,7 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Status
 
-Early scaffold: `src/main.py` is a placeholder, and `scripts/`, `notebooks/` and `tests/` are empty. `Makefile`, `README.md` and `.env.template` exist but are empty, so there are no build, lint or test commands yet. Update this file as the pipeline takes shape.
+Early scaffold: `src/main.py` is a placeholder, and `scripts/`, `notebooks/` and `tests/` are empty. `Makefile` and `.env.template` exist but are empty, and there are no tests yet. Update this file as the pipeline takes shape.
+
+## Lint, type check, format
+
+ruff and mypy are dev dependencies, using their default configs (no settings in `pyproject.toml`).
+
+- `uv run ruff check`: lint
+- `uv run mypy src`: type check
+- `uv run ruff format` and `uv run ruff check --fix`: autoformat and apply fixes
 
 ## Environment
 
