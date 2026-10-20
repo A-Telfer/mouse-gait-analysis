@@ -8,7 +8,7 @@ Early scaffold: the package is `src/mouse_gait/` (src layout, `uv_build` backend
 
 ## Lint, type check, format
 
-ruff and mypy are dev dependencies with default settings, except a mypy override that ignores missing `deeplabcut` imports.
+ruff and mypy are dev dependencies with default settings, with two exceptions. mypy ignores missing `deeplabcut` imports. ruff targets Python 3.10 for `scripts/*`, because those run in the older-Python DLC environment, so keep scripts free of 3.11+ syntax.
 
 - `uv run ruff check`: lint
 - `uv run mypy src scripts`: type check (`deeplabcut` imports are ignored; DLC runs in its own environment)

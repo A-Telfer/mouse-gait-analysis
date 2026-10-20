@@ -6,11 +6,34 @@ Run with the Python environment that has DeepLabCut installed.
 import argparse
 import getpass
 import sys
+import traceback
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 VIDEO_DIR = ROOT / "data" / "raw-videos"
 PROJECT_DIR = ROOT / "data" / "deeplabcut"
+
+
+class SetupStopped(Exception):
+    """Setup ended without creating a project."""
+
+
+def find_videos(video_dir: Path) -> list[str]:
+    """Return paths of all .mp4 videos; stop if any are missing.
+
+    Args:
+        video_dir: folder of raw videos
+    """
+    if not video_dir.is_dir():
+        raise SetupStopped(f"video folder not found: {video_dir}")
+    paths = sorted(video_dir.glob("*.mp4"))
+    missing = [p for p in paths if not p.is_file()]  # e.g. broken links
+    if missing:
+        listing = "\n".join(f"  {p}" for p in missing)
+        raise SetupStopped(f"unreadable videos:\n{listing}")
+    if not paths:
+        raise SetupStopped(f"no .mp4 videos found in {video_dir}")
+    return [str(p) for p in paths]
 
 
 def find_projects(project_dir: Path) -> list[Path]:
@@ -27,7 +50,8 @@ def confirm(prompt: str) -> bool:
     return input(f"{prompt} [y/N] ").strip().lower() in {"y", "yes"}
 
 
-def main() -> None:
+def main() -> str:
+    """Create the project and return its config.yaml path."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name", default="mouse-gait", help="project name")
     parser.add_argument(
@@ -35,15 +59,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    if not VIDEO_DIR.is_dir():
-        sys.exit(f"Video folder not found: {VIDEO_DIR}")
-    paths = sorted(VIDEO_DIR.glob("*.mp4"))
-    missing = [p for p in paths if not p.is_file()]  # e.g. broken links
-    if missing:
-        sys.exit("Unreadable videos:\n" + "\n".join(f"  {p}" for p in missing))
-    if not paths:
-        sys.exit(f"No .mp4 videos found in {VIDEO_DIR}")
-    videos = [str(p) for p in paths]
+    videos = find_videos(VIDEO_DIR)
     print(f"Found {len(videos)} videos in {VIDEO_DIR}")
 
     existing = find_projects(PROJECT_DIR)
@@ -52,10 +68,12 @@ def main() -> None:
         for config in existing:
             print(f"  {config}")
         if not confirm("Create a new project anyway?"):
-            print("No project created.")
-            return
+            raise SetupStopped("declined; kept existing project")
 
-    import deeplabcut  # slow import; only load once we're creating a project
+    try:
+        import deeplabcut  # slow import; only load once we're creating a project
+    except ModuleNotFoundError:
+        raise SetupStopped("DeepLabCut not installed; run from the DLC environment")
 
     PROJECT_DIR.mkdir(parents=True, exist_ok=True)
     config = deeplabcut.create_new_project(
@@ -66,9 +84,18 @@ def main() -> None:
         copy_videos=False,  # link videos instead of copying ~9 GB
     )
     if not config or not Path(config).exists():
-        sys.exit("DeepLabCut did not create a project (same name and date exists?)")
-    print(f"Created project with {len(videos)} videos: {config}")
+        raise SetupStopped("DeepLabCut did not create a project (same name and date?)")
+    return str(config)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        config = main()
+    except SetupStopped as e:
+        sys.exit(f"WARNING: no project created: {e}")
+    except (KeyboardInterrupt, EOFError):
+        sys.exit("\nWARNING: no project created: cancelled")
+    except Exception:  # noqa: BLE001 - any crash ends in a warning
+        traceback.print_exc()
+        sys.exit("WARNING: no project created: unexpected error (see above)")
+    print(f"SUCCESS: created DeepLabCut project: {config}")

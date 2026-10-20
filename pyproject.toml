@@ -22,6 +22,10 @@ dev = [
     "ruff>=0.17.1",
 ]
 
+[tool.ruff]
+# scripts/ run in the DeepLabCut environment, which uses an older Python
+per-file-target-version = { "scripts/*" = "py310" }
+
 [[tool.mypy.overrides]]
 module = ["deeplabcut", "deeplabcut.*"]
 ignore_missing_imports = true  # DLC runs in its own environment
