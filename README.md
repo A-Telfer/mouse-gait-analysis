@@ -33,3 +33,11 @@ make 00-deeplabcut   # or: python scripts/00_setup-deeplabcut.py
 Options (all optional): `--experimenter` (default: your login name) and `--name` (default: `mouse-gait`). Pass them through make with `ARGS="--experimenter <name>"`.
 
 This creates a project in `data/deeplabcut/` that links to (doesn't copy) every video in `data/raw-videos/`. If a project already exists there, the script asks before creating another.
+
+Then extract frames to label:
+
+```sh
+make 01-deeplabcut-frames   # or: python scripts/01_deeplabcut_extract_initial_frames.py
+```
+
+Options (all optional): `--frames-per-video` (default: 5, about 600 frames across all videos), `--algo` (`kmeans` or `uniform`, default: `kmeans`) and `--cluster-step` (default: 10; kmeans only looks at every Nth frame, for speed). If frames already exist, the script asks before adding more.
