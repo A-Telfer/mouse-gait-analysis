@@ -53,9 +53,13 @@ def confirm(prompt: str) -> bool:
 def main() -> str:
     """Create the project and return its config.yaml path."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--name", default="mouse-gait", help="project name")
     parser.add_argument(
-        "--experimenter", default=getpass.getuser(), help="experimenter name"
+        "--name", default="mouse-gait", help="project name (default: mouse-gait)"
+    )
+    parser.add_argument(
+        "--experimenter",
+        default=getpass.getuser(),
+        help="experimenter name (default: current user)",
     )
     args = parser.parse_args()
 

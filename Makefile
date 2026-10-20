@@ -19,5 +19,5 @@ typecheck: ## type check with mypy
 
 check: lint typecheck ## lint and type check
 
-00-deeplabcut: ## create DeepLabCut project (run in the DLC env; ARGS="--experimenter <name>")
+00-deeplabcut: ## create DeepLabCut project (run in the DLC env; optional ARGS="--experimenter <name>")
 	python scripts/00_setup-deeplabcut.py $(ARGS)

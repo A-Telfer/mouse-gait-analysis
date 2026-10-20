@@ -27,7 +27,9 @@ uv run ruff check --fix  # apply auto-fixable lint fixes
 DeepLabCut needs its own environment (it doesn't support this project's Python 3.14). From that environment, run:
 
 ```sh
-python scripts/00_setup-deeplabcut.py --experimenter <name>
+make 00-deeplabcut   # or: python scripts/00_setup-deeplabcut.py
 ```
+
+Options (all optional): `--experimenter` (default: your login name) and `--name` (default: `mouse-gait`). Pass them through make with `ARGS="--experimenter <name>"`.
 
 This creates a project in `data/deeplabcut/` that links to (doesn't copy) every video in `data/raw-videos/`. If a project already exists there, the script asks before creating another.
