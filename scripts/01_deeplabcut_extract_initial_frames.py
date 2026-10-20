@@ -1,7 +1,7 @@
 """Extract the initial frames to label from every video in the DeepLabCut project.
 
 Frames are picked completely at random from each video (DLC's "uniform" mode).
-Run with the Python environment that has DeepLabCut installed.
+Run with: uv run python scripts/01_deeplabcut_extract_initial_frames.py
 """
 
 import argparse

@@ -1,6 +1,6 @@
 """Create a DeepLabCut project in data/deeplabcut from the videos in data/raw-videos.
 
-Run with the Python environment that has DeepLabCut installed.
+Run with: uv run python scripts/00_setup-deeplabcut.py
 """
 
 import argparse

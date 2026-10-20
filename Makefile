@@ -19,8 +19,8 @@ typecheck: ## type check with mypy
 
 check: lint typecheck ## lint and type check
 
-00-deeplabcut: ## create DeepLabCut project (run in the DLC env; optional ARGS="--experimenter <name>")
-	python scripts/00_setup-deeplabcut.py $(ARGS)
+00-deeplabcut: ## create DeepLabCut project (optional ARGS="--experimenter <name>")
+	uv run python scripts/00_setup-deeplabcut.py $(ARGS)
 
-01-deeplabcut-frames: ## extract frames to label (run in the DLC env; optional ARGS="--frames-per-video 5")
-	python scripts/01_deeplabcut_extract_initial_frames.py $(ARGS)
+01-deeplabcut-frames: ## extract frames to label (optional ARGS="--frames-per-video 5")
+	uv run python scripts/01_deeplabcut_extract_initial_frames.py $(ARGS)

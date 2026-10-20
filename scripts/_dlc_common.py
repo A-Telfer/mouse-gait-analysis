@@ -1,4 +1,4 @@
-"""Shared helpers for the DeepLabCut scripts (run in the DLC environment)."""
+"""Shared helpers for the DeepLabCut scripts."""
 
 import sys
 import traceback
@@ -54,7 +54,7 @@ def import_deeplabcut() -> ModuleType:
     try:
         import deeplabcut
     except ModuleNotFoundError:
-        raise Stopped("DeepLabCut not installed; run from the DLC environment")
+        raise Stopped("DeepLabCut not installed; run uv sync")
     return deeplabcut
 
 
