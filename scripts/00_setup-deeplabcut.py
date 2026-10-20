@@ -12,6 +12,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 VIDEO_DIR = ROOT / "data" / "raw-videos"
 PROJECT_DIR = ROOT / "data" / "deeplabcut"
+BODYPARTS = [
+    "nose",
+    "chest",
+    "tailbase",
+    "midtail",
+    "tail_tip",
+    "left_front_paw",
+    "right_front_paw",
+    "left_toes",
+    "left_back_paw",
+    "right_toes",
+    "right_back_paw",
+]
 
 
 class SetupStopped(Exception):
@@ -76,6 +89,7 @@ def main() -> str:
 
     try:
         import deeplabcut  # slow import; only load once we're creating a project
+        from deeplabcut.utils.auxiliaryfunctions import edit_config
     except ModuleNotFoundError:
         raise SetupStopped("DeepLabCut not installed; run from the DLC environment")
 
@@ -89,6 +103,7 @@ def main() -> str:
     )
     if not config or not Path(config).exists():
         raise SetupStopped("DeepLabCut did not create a project (same name and date?)")
+    edit_config(config, {"bodyparts": BODYPARTS})
     return str(config)
 
 
