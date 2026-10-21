@@ -6,6 +6,10 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "deeplabcut[gui,pytorch]>=3.0.2",
+    "imageio-ffmpeg>=0.6.0",
+    "seaborn>=0.13.2",
+    "shapely>=2.2.0",
+    "tqdm>=4.70.1",
 ]
 
 [project.scripts]
@@ -22,6 +26,9 @@ module-name = "mouse_gait"
 dev = [
     "mypy>=2.4.0",
     "ruff>=0.17.1",
+    "types-seaborn>=0.13.2.20261006",
+    "types-shapely>=2.1.0.20260728",
+    "types-tqdm>=4.70.0.20260906",
 ]
 
 [tool.ruff]
@@ -29,5 +36,5 @@ dev = [
 per-file-target-version = { "scripts/*" = "py310" }
 
 [[tool.mypy.overrides]]
-module = ["deeplabcut", "deeplabcut.*"]
-ignore_missing_imports = true  # DLC runs in its own environment
+module = ["deeplabcut", "deeplabcut.*", "imageio_ffmpeg", "napari", "napari.*"]
+ignore_missing_imports = true  # no type info shipped

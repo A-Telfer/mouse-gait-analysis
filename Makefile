@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install format lint typecheck check 00-deeplabcut 01-deeplabcut-frames
+.PHONY: help install format lint typecheck check 00-corners 01-crop 02-deeplabcut 03-deeplabcut-frames 04-deeplabcut-label
 
 help: ## list available commands
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-21s\033[0m %s\n", $$1, $$2}'
@@ -19,8 +19,17 @@ typecheck: ## type check with mypy
 
 check: lint typecheck ## lint and type check
 
-00-deeplabcut: ## create DeepLabCut project (optional ARGS="--experimenter <name>")
-	uv run python scripts/00_setup-deeplabcut.py $(ARGS)
+00-corners: ## label the arena's 4 corners in every video (napari)
+	uv run python scripts/00_label_arena_corners.py
 
-01-deeplabcut-frames: ## extract frames to label (optional ARGS="--frames-per-video 5")
-	uv run python scripts/01_deeplabcut_extract_initial_frames.py $(ARGS)
+01-crop: ## crop videos to the arena (no re-encoding)
+	uv run python scripts/01_crop_videos.py
+
+02-deeplabcut: ## create DeepLabCut project (optional ARGS="--experimenter <name>")
+	uv run python scripts/02_deeplabcut_setup.py $(ARGS)
+
+03-deeplabcut-frames: ## extract frames to label (optional ARGS="--frames-per-video 5")
+	uv run python scripts/03_deeplabcut_extract_uniform_frames.py $(ARGS)
+
+04-deeplabcut-label: ## open newest project in the labeling GUI
+	uv run python scripts/04_deeplabcut_label_frames.py

@@ -1,6 +1,6 @@
-"""Create a DeepLabCut project in data/deeplabcut from the videos in data/raw-videos.
+"""Create a DeepLabCut project in data/deeplabcut from the videos in data/videos/cropped.
 
-Run with: uv run python scripts/00_setup-deeplabcut.py
+Run with: uv run python scripts/02_deeplabcut_setup.py
 """
 
 import argparse
@@ -8,8 +8,8 @@ import getpass
 from pathlib import Path
 
 from _dlc_common import (
+    CROPPED_VIDEO_DIR,
     PROJECT_DIR,
-    VIDEO_DIR,
     Stopped,
     confirm,
     find_projects,
@@ -39,10 +39,10 @@ def find_videos(video_dir: Path) -> list[str]:
     """Return paths of all .mp4 videos; stop if any are missing.
 
     Args:
-        video_dir: folder of raw videos
+        video_dir: folder of videos
     """
     if not video_dir.is_dir():
-        raise Stopped(f"video folder not found: {video_dir}")
+        raise Stopped(f"{video_dir} not found; run 01_crop_videos.py first")
     paths = sorted(video_dir.glob("*.mp4"))
     missing = [p for p in paths if not p.is_file()]  # e.g. broken links
     if missing:
@@ -66,8 +66,8 @@ def main() -> str:
     )
     args = parser.parse_args()
 
-    videos = find_videos(VIDEO_DIR)
-    print(f"Found {len(videos)} videos in {VIDEO_DIR}")
+    videos = find_videos(CROPPED_VIDEO_DIR)
+    print(f"Found {len(videos)} videos in {CROPPED_VIDEO_DIR}")
 
     existing = find_projects()
     if existing:
