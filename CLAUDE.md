@@ -14,6 +14,8 @@ ruff and mypy are dev dependencies with default settings, with two exceptions. m
 - `uv run mypy src scripts`: type check
 - `uv run ruff format` and `uv run ruff check --fix`: autoformat and apply fixes
 
+CI (`.github/workflows/checks.yml`) runs `ruff check`, `ruff format --check` and `mypy src scripts` on pushes to main and on PRs. The mypy job installs all dependencies, DLC included, so it's the slow one.
+
 ## Environment
 
 - Managed with `uv`, Python 3.14 (`.python-version`; `requires-python = ">=3.14"`). DeepLabCut 3.0.2 (`deeplabcut[gui,pytorch]`) is a project dependency.

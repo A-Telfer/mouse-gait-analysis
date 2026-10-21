@@ -1,0 +1,33 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      # Linting only needs the dev tools, so skip the heavy DLC install
+      - run: uv sync --locked --only-dev
+      - run: uv run --no-sync ruff check --output-format=github
+      - run: uv run --no-sync ruff format --check
+
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      # mypy needs the real dependencies (numpy, cv2, ...) to resolve imports
+      - run: uv sync --locked
+      - run: uv run --no-sync mypy src scripts
