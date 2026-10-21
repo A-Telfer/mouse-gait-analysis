@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install format lint typecheck check 00-corners 01-crop 02-deeplabcut 03-deeplabcut-frames 04-deeplabcut-label 05-deeplabcut-arena
+.PHONY: help install format lint typecheck check 00-corners 01-crop 02-deeplabcut 03-deeplabcut-frames 04-deeplabcut-label
 
 help: ## list available commands
 	@grep -E '^[a-zA-Z0-9_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-21s\033[0m %s\n", $$1, $$2}'
@@ -35,6 +35,3 @@ check: lint typecheck ## lint and type check
 
 04-deeplabcut-label: ## open newest project in the labeling GUI
 	uv run python scripts/04_deeplabcut_label_frames.py
-
-05-deeplabcut-arena: ## mark arena corners in the newest DeepLabCut project (napari)
-	uv run python scripts/05_deeplabcut_mark_arena.py
