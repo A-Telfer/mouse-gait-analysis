@@ -13,8 +13,9 @@ ruff and mypy are dev dependencies with default settings, with two exceptions. m
 - `uv run ruff check`: lint
 - `uv run mypy src scripts`: type check
 - `uv run ruff format` and `uv run ruff check --fix`: autoformat and apply fixes
+- `uv run rumdl check .` (add `--fix` to apply fixes): lint markdown. Line length (MD013) is off, since paragraphs stay on one line; config is `[tool.rumdl]` in `pyproject.toml`.
 
-CI (`.github/workflows/checks.yml`) runs `ruff check`, `ruff format --check` and `mypy src scripts` on pushes to main and on PRs. The mypy job installs all dependencies, DLC included, so it's the slow one.
+CI (`.github/workflows/checks.yml`) runs `ruff check`, `ruff format --check`, `rumdl check .` and `mypy src scripts` on pushes to main and on PRs. The mypy job installs all dependencies, DLC included, so it's the slow one.
 
 ## Environment
 

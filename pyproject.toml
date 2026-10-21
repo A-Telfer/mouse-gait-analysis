@@ -28,6 +28,7 @@ dev = [
     "mkdocs-material>=9.7.7",
     "mypy>=2.4.0",
     "ruff>=0.17.1",
+    "rumdl>=0.3.0",
     "types-seaborn>=0.13.2.20261006",
     "types-shapely>=2.1.0.20260728",
     "types-tqdm>=4.70.0.20260906",
@@ -40,3 +41,7 @@ per-file-target-version = { "scripts/*" = "py310" }
 [[tool.mypy.overrides]]
 module = ["deeplabcut", "deeplabcut.*", "imageio_ffmpeg", "napari", "napari.*"]
 ignore_missing_imports = true  # no type info shipped
+
+[tool.rumdl]
+disable = ["MD013"]  # one paragraph per line, no hard wrapping
+exclude = ["data", ".venv"]

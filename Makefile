@@ -10,9 +10,11 @@ install: ## install dependencies (uv sync)
 format: ## autoformat and apply lint fixes
 	uv run ruff format
 	uv run ruff check --fix
+	uv run rumdl check --fix .
 
-lint: ## lint with ruff
+lint: ## lint Python with ruff and markdown with rumdl
 	uv run ruff check
+	uv run rumdl check .
 
 typecheck: ## type check with mypy
 	uv run mypy src scripts

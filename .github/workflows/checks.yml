@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ruff:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,6 +20,7 @@ jobs:
       - run: uv sync --locked --only-dev
       - run: uv run --no-sync ruff check --output-format=github
       - run: uv run --no-sync ruff format --check
+      - run: uv run --no-sync rumdl check --output-format=github .
 
   mypy:
     runs-on: ubuntu-latest
