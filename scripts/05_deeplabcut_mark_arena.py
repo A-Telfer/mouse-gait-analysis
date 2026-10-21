@@ -4,7 +4,7 @@ Opens napari with one frame per video (scroll with the slider) and a 4-corner
 polygon on each. Drag the corners onto the arena (press D, then drag a vertex).
 Shift-C copies the current polygon to every video with the same frame size.
 Corners are saved to arena_corners.json in the project when the window closes.
-Run with: uv run python scripts/03_deeplabcut_mark_arena.py
+Run with: uv run python scripts/05_deeplabcut_mark_arena.py
 """
 
 import json
